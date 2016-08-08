@@ -1,7 +1,7 @@
 from util.dbutil import db, ValidationError
 
 
-class Campo(db.Model):
+class Local(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(120), unique=True)
     endereco = db.Column(db.String(256), unique=False)
@@ -23,7 +23,7 @@ class Campo(db.Model):
         return
 
     def __repr__(self):
-        return '<Campo %r>' % self.nome
+        return '<Local %r>' % self.nome
 
     def to_jason(self):
         return {
@@ -45,5 +45,5 @@ class Campo(db.Model):
             self.telefone_contato = json['telefone_contato']
             self.conta_deposito = json['conta_deposito']
         except KeyError as e:
-            raise ValidationError('Campo invalido! ' + e.args[0])
+            raise ValidationError('Local invalido! ' + e.args[0])
         return self

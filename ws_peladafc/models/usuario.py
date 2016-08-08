@@ -1,7 +1,7 @@
 from util.dbutil import db, ValidationError
 
 
-class Jogador(db.Model):
+class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
@@ -9,20 +9,24 @@ class Jogador(db.Model):
     mensalista = db.Column(db.Boolean, unique=False)
     time_id = db.Column(db.Integer, db.ForeignKey('time.id'), unique=False)
     time = db.relationship('Time', backref=db.backref('post', lazy='dynamic'))
+    tipo_usuario_id = db.Column(db.Integer, db.ForeignKey('tipo_usuario.id'), unique=False)
+    tipo_usuario = db.relationship('TipoUsuario', backref=db.backref('post', lazy='dynamic'))
 
-    def __init__(self, nome, email, telefone, time, mensalista, time_id):
+    def __init__(self, nome, email, telefone, time, mensalista, time_id, tipo_usuario_id, tipo_usuario):
         self.nome = nome
         self.email = email
         self.telefone = telefone
         self.time = time
         self.mensalista = mensalista
         self.time_id = time_id
+        self.tipo_usuario_id = tipo_usuario_id
+        self.tipo_usuario = tipo_usuario
 
     def __init__(self):
         return
 
     def __repr__(self):
-        return '<Jogador %r>' % self.nome
+        return '<Usuario %r>' % self.nome
 
     def to_json(self):
         return {
@@ -32,8 +36,9 @@ class Jogador(db.Model):
             'telefone': self.telefone,
             'time_id': self.time_id,
             'mensalista': self.mensalista,
-            'time': self.time.nome
-
+            'time': self.time.nome,
+            'tipo_usuario_id':self.tipo_usuario_id,
+            'tipo_usuario':self.tipo_usuario
         }
 
     def from_json(self, json):
@@ -43,6 +48,7 @@ class Jogador(db.Model):
             self.telefone = json['telefone']
             self.mensalista = json['mensalista']
             self.time_id = json['time_id']
+            self.tipo_usuario_id = json['tipo_usuario_id']
         except KeyError as e:
-            raise ValidationError('Jogador invalido : missing ' + e.args[0])
+            raise ValidationError('Usuario invalido : missing ' + e.args[0])
         return self
