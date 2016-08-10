@@ -299,6 +299,7 @@ def new_tipousuario():
 
 @app.route('/tipousuario/<int:id>', methods=['DELETE'])
 def remove_tipousuario(id):
+    print(id)
     tipousuario = TipoUsuario.query.get_or_404(id)
     db.session.delete(tipousuario)
     db.session.commit()
