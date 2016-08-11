@@ -1,14 +1,17 @@
 from unittest import TestCase
-from flask import json
+
+from models.grupo import Grupo
+from models.grupoUsuario import GrupoUsuario
+from models.local import Local
+from models.redeSocial import RedeSocial
+from models.time import Time
+from models.tipoUsuario import TipoUsuario
+from models.usuario import Usuario
+from util.dbutil import db
 from sqlalchemy import exc
 
-from app import app
-from util.dbutil import db
-
-from models.usuario import Usuario
 
 class ResetdbTest(TestCase):
-
 
     listaUsuario = [{
         'nome': 'Arthur',
@@ -27,6 +30,19 @@ class ResetdbTest(TestCase):
         }
     ]
 
+    listaGrupoUsuario = [{
+        'grupo_id': 1,
+        'usuario_id': 1,
+        'ativo': True,
+        'tipo_usuario_id': 1},
+        {
+        'grupo_id': 1,
+        'usuario_id': 2,
+        'ativo': True,
+        'tipo_usuario_id': 1
+        }
+    ]
+
     listaTimes = [{'nome':'Flamengo'}, {'nome':'Botafogo'}, {'nome':'Gremio'}]
 
     listaTipousuario = [{'descricao': 'Administrador'}, {'descricao': 'Jogador'}, {'descricao': 'Neutro'}]
@@ -37,7 +53,7 @@ class ResetdbTest(TestCase):
         {
             'nome_contato':'Renan',
             'email_contato':'renan2junior@gmail.com',
-            'local_id':'5',
+            'local_id':'1',
             'nome_grupo':'CICM',
             'horario':'11hs',
             'telefone_grupo':'3333-9999',
@@ -47,7 +63,7 @@ class ResetdbTest(TestCase):
         {
             'nome_contato':'Renan',
             'email_contato':'renan2junior@gmail.com',
-            'local_id':'5',
+            'local_id':'1',
             'nome_grupo':'CICM',
             'horario':'11hs',
             'telefone_grupo':'3333-9999',
@@ -87,7 +103,106 @@ class ResetdbTest(TestCase):
              ]
 
     def setUp(self):
-        db.session.execute('truncate table usuario cascade;')
-        db.session.execute('ALTER SEQUENCE usuario_id_seq  RESTART WITH 1;')
-        db.session.commit()
+        #db.drop_all()
         return
+
+    #def test_create_db(self):
+    #    db.create_all()
+
+    def test_popula_time(self):
+        i = 1
+        for item in self.listaTimes:
+            try:
+                obj = Time().from_json(item)
+                db.session.add(obj)
+                db.session.commit()
+                self.assertEqual(i, obj.id)
+                i += 1
+            except exc.IntegrityError as e:
+                print(e)
+                db.session.remove()
+                pass
+
+    def test_popula_rede_social(self):
+        i = 1
+        for item in self.listaRedesocial:
+            try:
+                obj = RedeSocial().from_json(item)
+                db.session.add(obj)
+                db.session.commit()
+                self.assertEqual(i, obj.id)
+                i += 1
+            except exc.IntegrityError as e:
+                print(e)
+                db.session.remove()
+                pass
+
+    def test_popula_local(self):
+        i = 1
+        for item in self.listaLocal:
+            try:
+                obj = Local().from_json(item)
+                db.session.add(obj)
+                db.session.commit()
+                self.assertEqual(i, obj.id)
+                i += 1
+            except exc.IntegrityError as e:
+                print(e)
+                db.session.remove()
+                pass
+
+    def test_popula_tipo_usuario(self):
+        i = 1
+        for item in self.listaTipousuario:
+            try:
+                obj = TipoUsuario().from_json(item)
+                db.session.add(obj)
+                db.session.commit()
+                self.assertEqual(i, obj.id)
+                i += 1
+            except exc.IntegrityError as e:
+                print(e)
+                db.session.remove()
+                pass
+
+    def test_popula_usuario(self):
+        i = 1
+        for item in self.listaUsuario:
+            try:
+                obj = Usuario().from_json(item)
+                db.session.add(obj)
+                db.session.commit()
+                self.assertEqual(i, obj.id)
+                i += 1
+            except exc.IntegrityError as e:
+                print(e)
+                db.session.remove()
+                pass
+
+    def test_grupo(self):
+        i = 1
+        for item in self.listaGrupo:
+            try:
+                obj = Grupo().from_json(item)
+                db.session.add(obj)
+                db.session.commit()
+                self.assertEqual(i, obj.id)
+                i += 1
+            except exc.IntegrityError as e:
+                print(e)
+                db.session.remove()
+                pass
+
+    def test_grupo_usuario(self):
+        i = 1
+        for item in self.listaGrupoUsuario:
+            try:
+                obj = GrupoUsuario().from_json(item)
+                db.session.add(obj)
+                db.session.commit()
+                #self.assertEqual(i, obj.id)
+                i += 1
+            except exc.IntegrityError as e:
+                print(e)
+                db.session.remove()
+                pass

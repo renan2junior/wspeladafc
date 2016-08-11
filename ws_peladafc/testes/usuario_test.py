@@ -1,18 +1,13 @@
-<<<<<<< HEAD
-from unittest import TestCase
-from flask import json
+from unittest import TestCase, main
 from sqlalchemy import exc
-
-from app import app
 from util.dbutil import db
-
 from models.usuario import Usuario
+from flask import json
+from app import app
 
 class UsuarioTest(TestCase):
 
-
     lista = [{
-
         'nome': 'Arthur',
         'email': 'arthur@gmail.com',
         'telefone': '1234567890',
@@ -20,7 +15,6 @@ class UsuarioTest(TestCase):
         'time_id': 1,
         'tipo_usuario_id': 1},
         {
-
         'nome': 'Renan',
         'email': 'renan@gmail.com',
         'telefone': '0987654321',
@@ -51,15 +45,10 @@ class UsuarioTest(TestCase):
                 print(e)
                 db.session.remove()
                 pass
-=======
-import unittest
-
-from flask import json
-
-from app import app
 
 
-class UsuarioApiTest(unittest.TestCase):
+
+class UsuarioApiTest(TestCase):
 
     lista = [{
               'nome':'Renan',
@@ -106,5 +95,4 @@ class UsuarioApiTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
->>>>>>> df9515c2234cf684791e31398a06c88fd85a39ff
+    main()
