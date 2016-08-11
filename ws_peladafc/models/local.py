@@ -25,7 +25,7 @@ class Local(db.Model):
     def __repr__(self):
         return '<Local %r>' % self.nome
 
-    def to_jason(self):
+    def to_json(self):
         return {
             'id': self.id,
             'nome': self.nome,

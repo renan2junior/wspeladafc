@@ -2,12 +2,12 @@ from flask import Flask, jsonify, request
 from flask_restful import Api
 from sqlalchemy import exc
 
+from models.grupoUsuario import GrupoUsuario
 from models.time import Time
 from util.dbutil import db
 from models.usuario import Usuario
 from models.pagamento import Pagamento
 from models.grupo import Grupo
-from models.user import User
 from models.local import Local
 from models.tipoUsuario import TipoUsuario
 from models.redeSocial import RedeSocial
@@ -17,30 +17,21 @@ app = Flask(__name__)
 api = Api(app)
 app.debug = True
 
-# if not app.debug:
-#     import logging
-#     from logging.handlers import RotatingFileHandler
-#     file_handler = RotatingFileHandler('python.log', maxBytes=1024 * 1024 * 100, backupCount=20)
-#     file_handler.setLevel(logging.ERROR)
-#     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-#     file_handler.setFormatter(formatter)
-#     app.logger.addHandler(file_handler)
-
 
 # Metodos do usuario
 
 @app.route('/user/', methods=['GET'])
 def get_usuarios():
-    usuarios = User.query.all()
+    usuarios = Usuario.query.all()
     lista = []
     for item in usuarios:
-        lista.append(User.to_json(item))
+        lista.append(Usuario.to_json(item))
     return jsonify(lista)
 
 
 @app.route('/user/<string:login>', methods=['GET'])
 def get_usuario(login):
-    user = User.query.filter_by(username=login).first()
+    user = Usuario.query.filter_by(username=login).first()
     return jsonify(user.to_json())
 
 
@@ -48,7 +39,7 @@ def get_usuario(login):
 def new_usuario():
     response = jsonify({})
     try:
-        usuario = User().from_json(request.json)
+        usuario = Usuario().from_json(request.json)
         db.session.add(usuario)
         db.session.commit()
         response.status_code = 200
@@ -62,7 +53,7 @@ def new_usuario():
 
 @app.route('/user/<int:id>', methods=['DELETE'])
 def remove_usuario(id):
-    usuario = User.query.get_or_404(id)
+    usuario = Usuario.query.get_or_404(id)
     db.session.delete(usuario)
     db.session.commit()
     return "Removido com sucesso!"
@@ -71,7 +62,7 @@ def remove_usuario(id):
 # Metodos da Grupo
 
 
-@app.route('/pelada/', methods=['GET'])
+@app.route('/grupo/', methods=['GET'])
 def get_peladas():
     peladas = Grupo.query.all()
     lista = []
@@ -80,7 +71,7 @@ def get_peladas():
     return jsonify(lista)
 
 
-@app.route('/pelada/', methods=['POST'])
+@app.route('/grupo/', methods=['POST'])
 def new_pelada():
     response = jsonify({})
     try:
@@ -96,7 +87,7 @@ def new_pelada():
     return response
 
 
-@app.route('/pelada/<int:id>', methods=['DELETE'])
+@app.route('/grupo/<int:id>', methods=['DELETE'])
 def remove_pelada(id):
     response = jsonify({})
     try:
@@ -341,6 +332,44 @@ def remove_redesocial(id):
     db.session.delete(resultado)
     db.session.commit()
     return "Removido com sucesso!"
+
+# Metodos do Grupo Usuario
+
+
+@app.route('/grupousuario/', methods=['GET'])
+def get_grupousuario():
+    resultado = GrupoUsuario.query.all()
+    lista = []
+    for item in resultado:
+        lista.append(RedeSocial.to_json(item))
+    return jsonify(lista)
+
+
+@app.route('/grupousuario/', methods=['POST'])
+def new_grupousuario():
+    response = jsonify({})
+    try:
+        print(request.json)
+        resultado = GrupoUsuario().from_json(request.json)
+        print(resultado)
+        db.session.add(resultado)
+        db.session.commit()
+        response.status_code = 200
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        response.status_code = 400
+        pass
+    return response
+
+
+@app.route('/grupousuario/<int:id_usuario>/<int:id_grupo>', methods=['DELETE'])
+def remove_grupousuario(id_usuario, id_grupo):
+    resultado = GrupoUsuario.query.get_or_404(id_usuario, id_grupo)
+    db.session.delete(resultado)
+    db.session.commit()
+    return "Removido com sucesso!"
+
 
 # Metodo de boas vindas
 

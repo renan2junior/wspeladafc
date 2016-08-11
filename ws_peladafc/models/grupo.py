@@ -5,25 +5,25 @@ class Grupo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome_contato = db.Column(db.String(80), unique=False)
     email_contato = db.Column(db.String(120), unique=False)
-    nome_pelada = db.Column(db.String(256), unique=True)
-    horario_pelada = db.Column(db.String(256), unique=False)
-    telefone_pelada = db.Column(db.String(256), unique=False)
-    conta_pelada = db.Column(db.String(256), unique=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=False)
-    user = db.relationship('User', backref=db.backref('post', lazy='dynamic'))
+    nome_grupo = db.Column(db.String(256), unique=True)
+    horario = db.Column(db.String(256), unique=False)
+    telefone_grupo = db.Column(db.String(256), unique=False)
+    conta_grupo = db.Column(db.String(256), unique=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), unique=False)
+    usuario = db.relationship('Usuario', backref=db.backref('post', lazy='dynamic'))
     local_id = db.Column(db.Integer, db.ForeignKey('local.id'), unique=False)
     local = db.relationship('Local', backref=db.backref('post', lazy='dynamic'))
 
-    def __init__(self, nome_contato, email_contato, local_pelada, nome_pelada, horario_pelada,
-                 telefone_pelada, conta_pelada, user_id, local_id):
+    def __init__(self, nome_contato, email_contato, local, nome_grupo, horario,
+                 telefone_grupo, conta_grupo, usuario_id, local_id):
         self.nome_contato = nome_contato
         self.email_contato = email_contato
-        self.local_pelada = local_pelada
-        self.nome_pelada = nome_pelada
-        self.horario_pelada = horario_pelada
-        self.telefone_pelada = telefone_pelada
-        self.conta_pelada = conta_pelada
-        self.user_id = user_id
+        self.local = local
+        self.nome_grupo = nome_grupo
+        self.horario = horario
+        self.telefone_grupo = telefone_grupo
+        self.conta_grupo = conta_grupo
+        self.usuario_id = usuario_id
         self.local_id = local_id
 
     def __init__(self):
@@ -34,27 +34,25 @@ class Grupo(db.Model):
             'id': self.id,
             'nome_contato': self.nome_contato,
             'email_contato': self.email_contato,
-            'local_pelada': self.local_pelada,
-            'nome_pelada': self.nome_pelada,
-            'horario_pelada': self.horario_pelada,
-            'telefone_pelada': self.telefone_pelada,
-            'conta_pelada': self.conta_pelada,
-            'user_id': self.user_id,
-            'user': self.user.username,
-            'local_id': self.local_id,
-            'local': self.local.nome
+            'local': self.local,
+            'nome_grupo': self.nome_grupo,
+            'horario': self.horario,
+            'telefone_grupo': self.telefone_grupo,
+            'conta_grupo': self.conta_grupo,
+            'usuario_id': self.usuario_id,
+            'usuario': self.usuario.nome,
+            'local_id': self.local_id
         }
 
     def from_json(self, json):
         try:
             self.nome_contato = json['nome_contato']
             self.email_contato = json['email_contato']
-            self.local_pelada = json['local_pelada']
-            self.nome_pelada = json['nome_pelada']
-            self.horario_pelada = json['horario_pelada']
-            self.telefone_pelada = json['telefone_pelada']
-            self.conta_pelada = json['conta_pelada']
-            self.user_id = json['user_id']
+            self.nome_grupo = json['nome_grupo']
+            self.horario = json['horario']
+            self.telefone_grupo = json['telefone_grupo']
+            self.conta_grupo = json['conta_grupo']
+            self.usuario_id = json['usuario_id']
             self.local_id = json['local_id']
         except KeyError as e:
             raise ValidationError('Grupo invalida : missing ' + e.args[0])

@@ -5,16 +5,13 @@ from flask import json
 from app import app
 
 
-class TimeTest(unittest.TestCase):
+class TimeApiTest(unittest.TestCase):
 
     lista_times = ['Flamengo', 'Botafogo', 'Gremio']
 
     def setUp(self):
         """Set up a blank temp database before each test"""
         self.app = app.test_client()
-
-
-    ## TIMES
 
     def get_time(self):
         rs = self.app.get('/time/', follow_redirects=True)
