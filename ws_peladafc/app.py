@@ -7,7 +7,6 @@ from util.dbutil import db
 from models.usuario import Usuario
 from models.pagamento import Pagamento
 from models.grupo import Grupo
-from models.user import User
 from models.local import Local
 from models.tipoUsuario import TipoUsuario
 from models.redeSocial import RedeSocial
@@ -31,16 +30,16 @@ app.debug = True
 
 @app.route('/user/', methods=['GET'])
 def get_usuarios():
-    usuarios = User.query.all()
+    usuarios = Usuario.query.all()
     lista = []
     for item in usuarios:
-        lista.append(User.to_json(item))
+        lista.append(Usuario.to_json(item))
     return jsonify(lista)
 
 
 @app.route('/user/<string:login>', methods=['GET'])
 def get_usuario(login):
-    user = User.query.filter_by(username=login).first()
+    user = Usuario.query.filter_by(username=login).first()
     return jsonify(user.to_json())
 
 
@@ -48,7 +47,7 @@ def get_usuario(login):
 def new_usuario():
     response = jsonify({})
     try:
-        usuario = User().from_json(request.json)
+        usuario = Usuario().from_json(request.json)
         db.session.add(usuario)
         db.session.commit()
         response.status_code = 200
@@ -62,7 +61,7 @@ def new_usuario():
 
 @app.route('/user/<int:id>', methods=['DELETE'])
 def remove_usuario(id):
-    usuario = User.query.get_or_404(id)
+    usuario = Usuario.query.get_or_404(id)
     db.session.delete(usuario)
     db.session.commit()
     return "Removido com sucesso!"
@@ -71,7 +70,7 @@ def remove_usuario(id):
 # Metodos da Grupo
 
 
-@app.route('/pelada/', methods=['GET'])
+@app.route('/grupo/', methods=['GET'])
 def get_peladas():
     peladas = Grupo.query.all()
     lista = []
@@ -80,7 +79,7 @@ def get_peladas():
     return jsonify(lista)
 
 
-@app.route('/pelada/', methods=['POST'])
+@app.route('/grupo/', methods=['POST'])
 def new_pelada():
     response = jsonify({})
     try:
@@ -96,7 +95,7 @@ def new_pelada():
     return response
 
 
-@app.route('/pelada/<int:id>', methods=['DELETE'])
+@app.route('/grupo/<int:id>', methods=['DELETE'])
 def remove_pelada(id):
     response = jsonify({})
     try:

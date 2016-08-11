@@ -5,7 +5,7 @@ class Pagamento(db.Model):
     mes = db.Column(db.String(6), primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), primary_key=True)
     grupo_id = db.Column(db.Integer, db.ForeignKey('grupo.id'), primary_key=True)
-    usuario = db.relationship('Usuario', backref=db.backref('post', lazy='dynamic'))
+    #usuario = db.relationship('Usuario', backref=db.backref('post', lazy='dynamic'))
     grupo = db.relationship('Grupo', backref=db.backref('post', lazy='dynamic'))
 
     def __init__(self):
@@ -18,7 +18,6 @@ class Pagamento(db.Model):
         return{
             'id': self.mes,
             'usuario_id': self.usuario_id,
-            'nome_usuario': self.usuario.nome,
             'grupo_id': self.grupo_id,
             'nome_grupo': self.grupo.nome_grupo
         }
