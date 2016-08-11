@@ -5,7 +5,7 @@ from flask import json
 from app import app
 
 
-class TimeTest(unittest.TestCase):
+class TimeApiTest(unittest.TestCase):
 
     lista_times = ['Flamengo', 'Botafogo', 'Gremio']
 

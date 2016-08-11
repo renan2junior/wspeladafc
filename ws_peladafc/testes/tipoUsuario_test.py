@@ -5,9 +5,9 @@ from flask import json
 from app import app
 
 
-class TddInApp(unittest.TestCase):
+class TipoUsuarioApiTest(unittest.TestCase):
 
-    lista_tipo_usuario = ['Administrador','Jogador','Neutro']
+    lista_tipo_usuario = ['Administrador', 'Jogador', 'Neutro']
 
     def setUp(self):
         """Set up a blank temp database before each test"""
