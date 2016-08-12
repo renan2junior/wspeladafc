@@ -8,9 +8,9 @@ class Usuario(db.Model):
     telefone = db.Column(db.String(12), unique=False)
     mensalista = db.Column(db.Boolean, unique=False)
     time_id = db.Column(db.Integer, db.ForeignKey('time.id'), unique=False)
-    time = db.relationship('Time', backref=db.backref('post', lazy='dynamic'))
+    time = db.relationship('Time', backref=db.backref('post', lazy='dynamic', cascade='all,delete'))
     tipo_usuario_id = db.Column(db.Integer, db.ForeignKey('tipo_usuario.id'), unique=False)
-    tipo_usuario = db.relationship('TipoUsuario', backref=db.backref('post', lazy='dynamic'))
+    tipo_usuario = db.relationship('TipoUsuario', backref=db.backref('post', lazy='dynamic',cascade='all,delete'))
 
     def __init__(self, nome, email, telefone, time, mensalista, time_id, tipo_usuario_id, tipo_usuario):
         self.nome = nome

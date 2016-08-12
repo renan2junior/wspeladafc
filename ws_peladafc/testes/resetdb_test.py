@@ -103,13 +103,25 @@ class ResetdbTest(TestCase):
              ]
 
     def setUp(self):
-        #db.drop_all()
+        try:
+            db.reflect()
+            db.drop_all()
+        except exc.SQLAlchemyError as e:
+            print(e)
+            db.session.remove()
+            pass
+
+        try:
+            db.create_all()
+        except exc.SQLAlchemyError as e:
+            print(e)
+            db.session.remove()
+            pass
+
         return
 
-    #def test_create_db(self):
-    #    db.create_all()
+    def test_popula(self):
 
-    def test_popula_time(self):
         i = 1
         for item in self.listaTimes:
             try:
@@ -123,7 +135,6 @@ class ResetdbTest(TestCase):
                 db.session.remove()
                 pass
 
-    def test_popula_rede_social(self):
         i = 1
         for item in self.listaRedesocial:
             try:
@@ -137,7 +148,6 @@ class ResetdbTest(TestCase):
                 db.session.remove()
                 pass
 
-    def test_popula_local(self):
         i = 1
         for item in self.listaLocal:
             try:
@@ -151,7 +161,6 @@ class ResetdbTest(TestCase):
                 db.session.remove()
                 pass
 
-    def test_popula_tipo_usuario(self):
         i = 1
         for item in self.listaTipousuario:
             try:
@@ -165,7 +174,6 @@ class ResetdbTest(TestCase):
                 db.session.remove()
                 pass
 
-    def test_popula_usuario(self):
         i = 1
         for item in self.listaUsuario:
             try:
@@ -179,7 +187,6 @@ class ResetdbTest(TestCase):
                 db.session.remove()
                 pass
 
-    def test_grupo(self):
         i = 1
         for item in self.listaGrupo:
             try:
@@ -193,14 +200,12 @@ class ResetdbTest(TestCase):
                 db.session.remove()
                 pass
 
-    def test_grupo_usuario(self):
         i = 1
         for item in self.listaGrupoUsuario:
             try:
                 obj = GrupoUsuario().from_json(item)
                 db.session.add(obj)
                 db.session.commit()
-                #self.assertEqual(i, obj.id)
                 i += 1
             except exc.IntegrityError as e:
                 print(e)

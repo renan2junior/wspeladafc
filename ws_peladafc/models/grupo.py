@@ -10,9 +10,9 @@ class Grupo(db.Model):
     telefone_grupo = db.Column(db.String(256), unique=False)
     conta_grupo = db.Column(db.String(256), unique=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), unique=False)
-    usuario = db.relationship('Usuario', backref=db.backref('post', lazy='dynamic'))
+    usuario = db.relationship('Usuario', backref=db.backref('post', lazy='dynamic', cascade='all,delete'))
     local_id = db.Column(db.Integer, db.ForeignKey('local.id'), unique=False)
-    local = db.relationship('Local', backref=db.backref('post', lazy='dynamic'))
+    local = db.relationship('Local', backref=db.backref('post', lazy='dynamic', cascade='all,delete'))
 
     def __init__(self, nome_contato, email_contato, local, nome_grupo, horario,
                  telefone_grupo, conta_grupo, usuario_id, local_id):
