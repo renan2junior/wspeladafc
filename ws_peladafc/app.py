@@ -20,7 +20,7 @@ app.debug = True
 
 # Metodos do usuario
 
-@app.route('/user/', methods=['GET'])
+@app.route('/usuario/', methods=['GET'])
 def get_usuarios():
     usuarios = Usuario.query.all()
     lista = []
@@ -29,13 +29,13 @@ def get_usuarios():
     return jsonify(lista)
 
 
-@app.route('/user/<string:login>', methods=['GET'])
+@app.route('/usuario/<string:login>', methods=['GET'])
 def get_usuario(login):
     user = Usuario.query.filter_by(username=login).first()
     return jsonify(user.to_json())
 
 
-@app.route('/user/', methods=['POST'])
+@app.route('/usuario/', methods=['POST'])
 def new_usuario():
     response = jsonify({})
     try:
@@ -51,7 +51,7 @@ def new_usuario():
     return response
 
 
-@app.route('/user/<int:id>', methods=['DELETE'])
+@app.route('/usuario/<int:id>', methods=['DELETE'])
 def remove_usuario(id):
     usuario = Usuario.query.get_or_404(id)
     db.session.delete(usuario)
@@ -63,7 +63,7 @@ def remove_usuario(id):
 
 
 @app.route('/grupo/', methods=['GET'])
-def get_peladas():
+def get_grupos():
     peladas = Grupo.query.all()
     lista = []
     for item in peladas:
@@ -72,7 +72,7 @@ def get_peladas():
 
 
 @app.route('/grupo/', methods=['POST'])
-def new_pelada():
+def new_grupo():
     response = jsonify({})
     try:
         pelada = Grupo().from_json(request.json)
@@ -88,7 +88,7 @@ def new_pelada():
 
 
 @app.route('/grupo/<int:id>', methods=['DELETE'])
-def remove_pelada(id):
+def remove_grupo(id):
     response = jsonify({})
     try:
         pelada = Grupo.query.get_or_404(id)
@@ -102,48 +102,6 @@ def remove_pelada(id):
         pass
     return response
 
-
-# Metodos do Usuario
-
-@app.route('/jogador/', methods=['GET'])
-def get_jogadores():
-    jogadores = Usuario.query.all()
-    lista = []
-    for item in jogadores:
-        lista.append(Usuario.to_json(item))
-    return jsonify(lista)
-
-
-@app.route('/jogador/', methods=['POST'])
-def new_jogador():
-    response = jsonify({})
-    try:
-        jogador = Usuario().from_json(request.json)
-        db.session.add(jogador)
-        db.session.commit()
-        response.status_code = 200
-    except exc.SQLAlchemyError as e:
-        print(e)
-        db.session.remove()
-        response.status_code = 400
-        pass
-    return response
-
-
-@app.route('/jogador/<int:id>', methods=['DELETE'])
-def remove_jogador(id):
-    response = jsonify({})
-    try:
-        jogador = Usuario.query.get_or_404(id)
-        db.session.delete(jogador)
-        db.session.commit()
-        response.status_code = 200
-    except exc.SQLAlchemyError as e:
-        response.status_code = 400
-        print(e)
-        db.session.remove()
-        pass
-    return response
 
 # Metodos do Pagamento
 
@@ -170,7 +128,24 @@ def new_pagamento():
         response.status_code = 400
         db.session.remove()
         pass
+
     return response
+
+
+@app.route('/pagamento/<int:usuario_id>/<int:grupo_id>/<string:mes_ano>', methods=['DELETE'])
+def remove_pagamento(usuario_id, grupo_id, mes_ano):
+    response = jsonify({})
+    try:
+        resultado = Pagamento.query.filter_by(usuario_id=usuario_id, grupo_id=grupo_id, mes_ano=mes_ano).first()
+        db.session.delete(resultado)
+        db.session.commit()
+        response.status_code = 200
+    except exc.SQLAlchemyError as e:
+        response.status_code = 400
+        db.session.remove()
+        pass
+    return response
+
 
 # Metodos para times
 
@@ -341,7 +316,7 @@ def get_grupousuario():
     resultado = GrupoUsuario.query.all()
     lista = []
     for item in resultado:
-        lista.append(RedeSocial.to_json(item))
+        lista.append(GrupoUsuario.to_json(item))
     return jsonify(lista)
 
 
@@ -363,9 +338,9 @@ def new_grupousuario():
     return response
 
 
-@app.route('/grupousuario/<int:id_usuario>/<int:id_grupo>', methods=['DELETE'])
-def remove_grupousuario(id_usuario, id_grupo):
-    resultado = GrupoUsuario.query.get_or_404(id_usuario, id_grupo)
+@app.route('/grupousuario/<int:usuario_id>/<int:grupo_id>/<int:tipo_usuario_id>', methods=['DELETE'])
+def remove_grupousuario(usuario_id, grupo_id, tipo_usuario_id):
+    resultado = GrupoUsuario.query.filter_by(usuario_id=usuario_id, grupo_id=grupo_id, tipo_usuario_id=tipo_usuario_id).first()
     db.session.delete(resultado)
     db.session.commit()
     return "Removido com sucesso!"
