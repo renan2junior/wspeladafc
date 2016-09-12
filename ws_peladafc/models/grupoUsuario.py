@@ -30,7 +30,6 @@ class GrupoUsuario(db.Model):
             self.usuario_id = json['usuario_id']
             self.grupo_id = json['grupo_id']
             self.tipo_usuario_id = json['tipo_usuario_id']
-
         except KeyError as e:
             raise ValidationError('Grupo Usuario invalido! : missing ' + e.args[0])
         return self

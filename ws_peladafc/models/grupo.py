@@ -34,13 +34,11 @@ class Grupo(db.Model):
             'id': self.id,
             'nome_contato': self.nome_contato,
             'email_contato': self.email_contato,
-            'local': self.local,
             'nome_grupo': self.nome_grupo,
             'horario': self.horario,
             'telefone_grupo': self.telefone_grupo,
             'conta_grupo': self.conta_grupo,
             'usuario_id': self.usuario_id,
-            'usuario': self.usuario.nome,
             'local_id': self.local_id
         }
 

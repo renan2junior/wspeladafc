@@ -16,7 +16,7 @@ class RedeSocial(db.Model):
 
     def to_json(self):
         return {
-            'id':self.id,
+            'id': self.id,
             'descricao':self.descricao
         }
 
