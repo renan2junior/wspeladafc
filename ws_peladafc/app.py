@@ -35,12 +35,43 @@ def get_usuario(login):
     return jsonify(user.to_json())
 
 
+@app.route('/usuario/<int:id>', methods=['GET'])
+def get_usuariobyid(id):
+    response = jsonify({})
+    try:
+        usuario = Usuario.query.get_or_404(id)
+        response.status_code = 200
+    except exc.SQLAlchemyError as e:
+        response.status_code = 400
+        print(e)
+        db.session.remove()
+        pass
+    return jsonify(usuario.to_json())
+
+
 @app.route('/usuario/', methods=['POST'])
 def new_usuario():
     response = jsonify({})
     try:
         usuario = Usuario().from_json(request.json)
         db.session.add(usuario)
+        db.session.commit()
+        response.status_code = 200
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        response.status_code = 400
+        pass
+    return response
+
+
+@app.route('/usuario/', methods=['PUT'])
+def update_usuario():
+    usuario_alterado = Usuario().from_json(request.json)
+    usuario = Time.query.get(usuario_alterado.id)
+    usuario.from_json(request.json)
+    response = jsonify({})
+    try:
         db.session.commit()
         response.status_code = 200
     except exc.IntegrityError as e:
