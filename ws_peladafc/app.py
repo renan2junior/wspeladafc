@@ -175,6 +175,23 @@ def new_time():
     return response
 
 
+@app.route('/time/', methods=['PUT'])
+def update_time():
+    time_alterado = Time().from_json(request.json)
+    time = Time.query.get(time_alterado.id)
+    time.from_json(request.json)
+    response = jsonify({})
+    try:
+        db.session.commit()
+        response.status_code = 200
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        response.status_code = 400
+        pass
+    return response
+
+
 @app.route('/time/<int:id>', methods=['DELETE'])
 def remove_time(id):
     response = jsonify({})
@@ -189,6 +206,20 @@ def remove_time(id):
         db.session.remove()
         pass
     return response
+
+
+@app.route('/time/<int:id>', methods=['GET'])
+def getbyid_time(id):
+    response = jsonify({})
+    try:
+        time = Time.query.get_or_404(id)
+        response.status_code = 200
+    except exc.SQLAlchemyError as e:
+        response.status_code = 400
+        print(e)
+        db.session.remove()
+        pass
+    return jsonify(time.to_json())
 
 
 #Metodos para local

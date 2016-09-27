@@ -22,6 +22,8 @@ class Time(db.Model):
 
     def from_json(self, json):
         try:
+            if json['id']:
+                self.id = json['id']
             self.nome = json['nome']
         except KeyError as e:
             raise ValidationError('Time invalido !' + e.args[0])
