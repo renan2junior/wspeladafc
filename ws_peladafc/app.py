@@ -407,6 +407,20 @@ def get_redesocial():
     return jsonify(lista)
 
 
+@app.route('/redesocial/<int:id>', methods=['GET'])
+def get_redesocialbyid(id):
+    response = jsonify({})
+    try:
+        redesocial = RedeSocial.query.get_or_404(id)
+        response.status_code = 200
+    except exc.SQLAlchemyError as e:
+        response.status_code = 400
+        print(e)
+        db.session.remove()
+        pass
+    return jsonify(redesocial.to_json())
+
+
 @app.route('/redesocial/', methods=['POST'])
 def new_redesocial():
     response = jsonify({})
@@ -427,6 +441,7 @@ def new_redesocial():
 
 @app.route('/redesocial/', methods=['PUT'])
 def update_redesocial():
+    print("chegou!")
     redesocial_alterado = RedeSocial().from_json(request.json)
     redesocial = RedeSocial.query.get(redesocial_alterado.id)
     redesocial.from_json(request.json)
