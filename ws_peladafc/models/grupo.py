@@ -44,6 +44,8 @@ class Grupo(db.Model):
 
     def from_json(self, json):
         try:
+            if json['id']:
+                self.id = json['id']
             self.nome_contato = json['nome_contato']
             self.email_contato = json['email_contato']
             self.nome_grupo = json['nome_grupo']

@@ -102,12 +102,43 @@ def get_grupos():
     return jsonify(lista)
 
 
+@app.route('/grupo/<int:id>', methods=['GET'])
+def get_grupobyid(id):
+    response = jsonify({})
+    try:
+        grupo = Grupo.query.get_or_404(id)
+        response.status_code = 200
+    except exc.SQLAlchemyError as e:
+        response.status_code = 400
+        print(e)
+        db.session.remove()
+        pass
+    return jsonify(grupo.to_json())
+
+
 @app.route('/grupo/', methods=['POST'])
 def new_grupo():
     response = jsonify({})
     try:
         pelada = Grupo().from_json(request.json)
         db.session.add(pelada)
+        db.session.commit()
+        response.status_code = 200
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        response.status_code = 400
+        pass
+    return response
+
+
+@app.route('/grupo/', methods=['PUT'])
+def update_grupo():
+    grupo_alterado = Grupo().from_json(request.json)
+    grupo = Grupo.query.get(grupo_alterado.id)
+    grupo.from_json(request.json)
+    response = jsonify({})
+    try:
         db.session.commit()
         response.status_code = 200
     except exc.IntegrityError as e:
@@ -265,12 +296,43 @@ def get_locals():
     return jsonify(lista)
 
 
+@app.route('/local/<int:id>', methods=['GET'])
+def get_localbyid(id):
+    response = jsonify({})
+    try:
+        local = Local.query.get_or_404(id)
+        response.status_code = 200
+    except exc.SQLAlchemyError as e:
+        response.status_code = 400
+        print(e)
+        db.session.remove()
+        pass
+    return jsonify(local.to_json())
+
+
 @app.route('/local/', methods=['POST'])
 def new_local():
     local = Local().from_json(request.json)
     response = jsonify({})
     try:
         db.session.add(local)
+        db.session.commit()
+        response.status_code = 200
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        response.status_code = 400
+        pass
+    return response
+
+
+@app.route('/local/', methods=['PUT'])
+def update_local():
+    local_alterado = Local().from_json(request.json)
+    local = Local.query.get(local_alterado.id)
+    local.from_json(request.json)
+    response = jsonify({})
+    try:
         db.session.commit()
         response.status_code = 200
     except exc.IntegrityError as e:
@@ -353,6 +415,23 @@ def new_redesocial():
         resultado = RedeSocial().from_json(request.json)
         print(resultado)
         db.session.add(resultado)
+        db.session.commit()
+        response.status_code = 200
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        response.status_code = 400
+        pass
+    return response
+
+
+@app.route('/redesocial/', methods=['PUT'])
+def update_redesocial():
+    redesocial_alterado = RedeSocial().from_json(request.json)
+    redesocial = RedeSocial.query.get(redesocial_alterado.id)
+    redesocial.from_json(request.json)
+    response = jsonify({})
+    try:
         db.session.commit()
         response.status_code = 200
     except exc.IntegrityError as e:

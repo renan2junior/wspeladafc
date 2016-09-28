@@ -22,6 +22,8 @@ class RedeSocial(db.Model):
 
     def from_json(self, json):
         try:
+            if json['id']:
+                self.id = json['id']
             self.descricao = json['descricao']
         except KeyError as e:
             raise ValidationError('Rede Social insvalida !' + e.args[0])
