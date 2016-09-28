@@ -37,7 +37,12 @@ class Usuario(db.Model):
             'time_id': self.time_id,
             'mensalista': self.mensalista,
             'time': self.time.nome,
-            'tipo_usuario_id': self.tipo_usuario_id
+            'tipo_usuario_id': self.tipo_usuario_id,
+            'time': { 'id': self.time.id ,
+                      'nome': self.time.nome
+            },
+            'tipo_usuario': {'id': self.tipo_usuario.id,
+                             'descricao': self.tipo_usuario.descricao}
         }
 
     def from_json(self, json):
