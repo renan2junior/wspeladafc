@@ -37,8 +37,8 @@
           <file leaf-file-name="usuario.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/models/usuario.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="180">
-                  <caret line="37" column="42" selection-start-line="37" selection-start-column="42" selection-end-line="37" selection-end-column="42" />
+                <state relative-caret-position="90">
+                  <caret line="31" column="16" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="16" />
                   <folding />
                 </state>
               </provider>
@@ -741,8 +741,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/models/usuario.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="37" column="42" selection-start-line="37" selection-start-column="42" selection-end-line="37" selection-end-column="42" />
+        <state relative-caret-position="90">
+          <caret line="31" column="16" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="16" />
           <folding />
         </state>
       </provider>
