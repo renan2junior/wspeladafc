@@ -38,7 +38,7 @@ class Local(db.Model):
 
     def from_json(self, json):
         try:
-            if json['id']:
+            if json.get('id'):
                 self.id = json['id']
             self.nome = json['nome']
             self.endereco = json['endereco']

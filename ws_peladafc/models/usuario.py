@@ -34,20 +34,15 @@ class Usuario(db.Model):
             'nome': self.nome,
             'email': self.email,
             'telefone': self.telefone,
-            'time_id': self.time_id,
             'mensalista': self.mensalista,
             'time': self.time.nome,
-            'tipo_usuario_id': self.tipo_usuario_id,
-            'time': { 'id': self.time.id ,
-                      'nome': self.time.nome
-            },
-            'tipo_usuario': {'id': self.tipo_usuario.id,
-                             'descricao': self.tipo_usuario.descricao}
+            'time': self.time.to_json(),
+            'tipo_usuario': self.tipo_usuario.to_json()
         }
 
     def from_json(self, json):
         try:
-            if json['id']:
+            if json.get('id'):
                self.id = json['id']
             self.nome = json['nome']
             self.email = json['email']

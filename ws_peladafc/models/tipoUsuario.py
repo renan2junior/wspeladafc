@@ -22,7 +22,6 @@ class TipoUsuario(db.Model):
 
     def from_json(self, json):
         try:
-            print(json)
             self.descricao = json['descricao']
         except KeyError as e:
             raise ValidationError('Tipo Usuario invalido !' + e.args[0])

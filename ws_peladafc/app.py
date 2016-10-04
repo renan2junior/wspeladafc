@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_restful import Api
 from sqlalchemy import exc
 
@@ -22,72 +22,96 @@ app.debug = True
 
 @app.route('/usuario/', methods=['GET'])
 def get_usuarios():
-    usuarios = Usuario.query.all()
-    lista = []
-    for item in usuarios:
-        lista.append(Usuario.to_json(item))
-    return jsonify(lista)
+    try:
+        usuarios = Usuario.query.all()
+        lista = []
+        for item in usuarios:
+            lista.append(Usuario.to_json(item))
+        return make_response(jsonify(lista), 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/usuario/<string:login>', methods=['GET'])
 def get_usuario(login):
-    user = Usuario.query.filter_by(username=login).first()
-    return jsonify(user.to_json())
+    try:
+        usuario = Usuario.query.filter_by(email=login).first()
+        if(usuario):
+            rs_usuario = jsonify(usuario.to_json())
+        else:
+            rs_usuario = jsonify({})
+        return make_response(rs_usuario, 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/usuario/<int:id>', methods=['GET'])
 def get_usuariobyid(id):
-    response = jsonify({})
     try:
         usuario = Usuario.query.get_or_404(id)
-        response.status_code = 200
+        if (usuario):
+            rs_usuario = jsonify(usuario.to_json())
+        else:
+            rs_usuario = jsonify({})
+        return make_response(rs_usuario, 200)
     except exc.SQLAlchemyError as e:
-        response.status_code = 400
         print(e)
         db.session.remove()
         pass
-    return jsonify(usuario.to_json())
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/usuario/', methods=['POST'])
 def new_usuario():
-    response = jsonify({})
     try:
         usuario = Usuario().from_json(request.json)
         db.session.add(usuario)
         db.session.commit()
-        response.status_code = 200
+        if (usuario):
+            rs_usuario = jsonify(usuario.to_json())
+        else:
+            rs_usuario = jsonify({})
+        return make_response(rs_usuario, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/usuario/', methods=['PUT'])
 def update_usuario():
     usuario_alterado = Usuario().from_json(request.json)
-    usuario = Time.query.get(usuario_alterado.id)
+    usuario = Usuario.query.get(usuario_alterado.id)
     usuario.from_json(request.json)
-    response = jsonify({})
     try:
         db.session.commit()
-        response.status_code = 200
+        return make_response(usuario, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/usuario/<int:id>', methods=['DELETE'])
 def remove_usuario(id):
-    usuario = Usuario.query.get_or_404(id)
-    db.session.delete(usuario)
-    db.session.commit()
-    return "Removido com sucesso!"
+    try:
+        usuario = Usuario.query.get_or_404(id)
+        db.session.delete(usuario)
+        db.session.commit()
+        return make_response("Removido com sucesso!", 200)
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 # Metodos da Grupo
@@ -95,74 +119,80 @@ def remove_usuario(id):
 
 @app.route('/grupo/', methods=['GET'])
 def get_grupos():
-    peladas = Grupo.query.all()
-    lista = []
-    for item in peladas:
-        lista.append(Grupo.to_json(item))
-    return jsonify(lista)
+    try:
+        grupos = Grupo.query.all()
+        lista = []
+        for item in grupos:
+            lista.append(Grupo.to_json(item))
+        return make_response(jsonify(lista), 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/grupo/<int:id>', methods=['GET'])
 def get_grupobyid(id):
-    response = jsonify({})
     try:
         grupo = Grupo.query.get_or_404(id)
-        response.status_code = 200
+        if (grupo):
+            rs_grupo = jsonify(grupo.to_json())
+        else:
+            rs_grupo = jsonify({})
+        return make_response(rs_grupo, 200)
     except exc.SQLAlchemyError as e:
-        response.status_code = 400
         print(e)
         db.session.remove()
         pass
-    return jsonify(grupo.to_json())
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/grupo/', methods=['POST'])
 def new_grupo():
-    response = jsonify({})
     try:
-        pelada = Grupo().from_json(request.json)
-        db.session.add(pelada)
+        grupo = Grupo().from_json(request.json)
+        db.session.add(grupo)
         db.session.commit()
-        response.status_code = 200
+        if (grupo):
+            rs_grupo = jsonify(grupo.to_json())
+        else:
+            rs_grupo = jsonify({})
+        return make_response(rs_grupo, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/grupo/', methods=['PUT'])
 def update_grupo():
     grupo_alterado = Grupo().from_json(request.json)
-    grupo = Grupo.query.get(grupo_alterado.id)
+    grupo = Time.query.get(grupo_alterado.id)
     grupo.from_json(request.json)
-    response = jsonify({})
     try:
         db.session.commit()
-        response.status_code = 200
+        return make_response(grupo, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/grupo/<int:id>', methods=['DELETE'])
 def remove_grupo(id):
-    response = jsonify({})
     try:
-        pelada = Grupo.query.get_or_404(id)
-        db.session.delete(pelada)
+        grupo = Grupo.query.get_or_404(id)
+        db.session.delete(grupo)
         db.session.commit()
-        response.status_code=200
-    except exc.SQLAlchemyError as e:
+        return make_response("Removido com sucesso!", 200)
+    except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 # Metodos do Pagamento
@@ -170,43 +200,48 @@ def remove_grupo(id):
 
 @app.route('/pagamento/', methods=['GET'])
 def get_pagamentos():
-    pagamentos = Pagamento.query.all()
-    lista = []
-    for item in pagamentos:
-        lista.append(Pagamento.to_json(item))
-    return jsonify(lista)
+    try:
+        pagamentos = Pagamento.query.all()
+        lista = []
+        for item in pagamentos:
+            lista.append(Pagamento.to_json(item))
+        return make_response(jsonify(lista), 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/pagamento/', methods=['POST'])
 def new_pagamento():
-    pagamento = Pagamento().from_json(request.json)
-    response = jsonify({})
     try:
+        pagamento = Pagamento().from_json(request.json)
         db.session.add(pagamento)
         db.session.commit()
-        response.status_code = 200
+        if (pagamento):
+            rs_pagamento = jsonify(pagamento.to_json())
+        else:
+            rs_pagamento = jsonify({})
+        return make_response(rs_pagamento, 200)
     except exc.IntegrityError as e:
         print(e)
-        response.status_code = 400
         db.session.remove()
         pass
-
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/pagamento/<int:usuario_id>/<int:grupo_id>/<string:mes_ano>', methods=['DELETE'])
 def remove_pagamento(usuario_id, grupo_id, mes_ano):
-    response = jsonify({})
     try:
         resultado = Pagamento.query.filter_by(usuario_id=usuario_id, grupo_id=grupo_id, mes_ano=mes_ano).first()
         db.session.delete(resultado)
         db.session.commit()
-        response.status_code = 200
+        return make_response("Removido com sucesso!", 200)
     except exc.SQLAlchemyError as e:
-        response.status_code = 400
         db.session.remove()
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 # Metodos para times
@@ -214,27 +249,35 @@ def remove_pagamento(usuario_id, grupo_id, mes_ano):
 
 @app.route('/time/', methods=['GET'])
 def get_times():
-    times = Time.query.all()
-    lista = []
-    for item in times:
-        lista.append(Time.to_json(item))
-    return jsonify(lista)
+    try:
+        times = Time.query.all()
+        lista = []
+        for item in times:
+            lista.append(Time.to_json(item))
+        return make_response(jsonify(lista), 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/time/', methods=['POST'])
 def new_time():
-    time = Time().from_json(request.json)
-    response = jsonify({})
     try:
+        time = Time().from_json(request.json)
         db.session.add(time)
         db.session.commit()
-        response.status_code = 200
+        if (time):
+            rs_time = jsonify(time.to_json())
+        else:
+            rs_time = jsonify({})
+        return make_response(rs_time, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/time/', methods=['PUT'])
@@ -242,16 +285,14 @@ def update_time():
     time_alterado = Time().from_json(request.json)
     time = Time.query.get(time_alterado.id)
     time.from_json(request.json)
-    response = jsonify({})
     try:
         db.session.commit()
-        response.status_code = 200
+        return make_response(time, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/time/<int:id>', methods=['DELETE'])
@@ -261,27 +302,28 @@ def remove_time(id):
         time = Time.query.get_or_404(id)
         db.session.delete(time)
         db.session.commit()
-        response.status_code = 200
+        return make_response("Removido com sucesso!", 200)
     except exc.SQLAlchemyError as e:
-        response.status_code = 400
         print(e)
         db.session.remove()
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/time/<int:id>', methods=['GET'])
 def getbyid_time(id):
-    response = jsonify({})
     try:
         time = Time.query.get_or_404(id)
-        response.status_code = 200
+        if (time):
+            rs_time = jsonify(time.to_json())
+        else:
+            rs_time = jsonify({})
+        return make_response(rs_time, 200)
     except exc.SQLAlchemyError as e:
-        response.status_code = 400
         print(e)
         db.session.remove()
         pass
-    return jsonify(time.to_json())
+        return make_response(jsonify({}), 400)
 
 
 #Metodos para local
@@ -289,41 +331,46 @@ def getbyid_time(id):
 
 @app.route('/local/', methods=['GET'])
 def get_locals():
-    locals = Local.query.all()
-    lista = []
-    for item in locals:
-        lista.append(Local.to_json(item))
-    return jsonify(lista)
+    try:
+        loacais = Local.query.all()
+        lista = []
+        for item in loacais:
+            lista.append(Local.to_json(item))
+        return make_response(jsonify(lista), 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/local/<int:id>', methods=['GET'])
 def get_localbyid(id):
-    response = jsonify({})
     try:
         local = Local.query.get_or_404(id)
-        response.status_code = 200
+        if (local):
+            rs_local = jsonify(local.to_json())
+        else:
+            rs_local = jsonify({})
+        return make_response(rs_local, 200)
     except exc.SQLAlchemyError as e:
-        response.status_code = 400
         print(e)
         db.session.remove()
         pass
-    return jsonify(local.to_json())
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/local/', methods=['POST'])
 def new_local():
     local = Local().from_json(request.json)
-    response = jsonify({})
     try:
         db.session.add(local)
         db.session.commit()
-        response.status_code = 200
+        return make_response(jsonify(local.to_json()), 200)
     except exc.IntegrityError as e:
-        print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/local/', methods=['PUT'])
@@ -331,32 +378,28 @@ def update_local():
     local_alterado = Local().from_json(request.json)
     local = Local.query.get(local_alterado.id)
     local.from_json(request.json)
-    response = jsonify({})
     try:
         db.session.commit()
-        response.status_code = 200
+        return make_response(local, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/local/<int:id>', methods=['DELETE'])
 def remove_local(id):
-    response = jsonify({})
     try:
         local = Local.query.get_or_404(id)
         db.session.delete(local)
         db.session.commit()
-        response.status_code = 200
+        return make_response("Removido com sucesso!", 200)
     except exc.SQLAlchemyError as e:
-        response.status_code = 400
         print(e)
         db.session.remove()
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 # Metodos do tipo usuario
@@ -364,142 +407,178 @@ def remove_local(id):
 
 @app.route('/tipousuario/', methods=['GET'])
 def get_tipousuarios():
-    tipousuarios = TipoUsuario.query.all()
-    lista = []
-    for item in tipousuarios:
-        lista.append(TipoUsuario.to_json(item))
-    return jsonify(lista)
+    try:
+        tipousuarios = TipoUsuario.query.all()
+        lista = []
+        for item in tipousuarios:
+            lista.append(TipoUsuario.to_json(item))
+        return make_response(jsonify(lista), 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/tipousuario/', methods=['POST'])
 def new_tipousuario():
-    response = jsonify({})
     try:
         tipousuario = TipoUsuario().from_json(request.json)
         db.session.add(tipousuario)
         db.session.commit()
-        response.status_code = 200
+        if (tipousuario):
+            rs = jsonify(tipousuario.to_json())
+        else:
+            rs = jsonify({})
+        return make_response(rs, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/tipousuario/<int:id>', methods=['DELETE'])
 def remove_tipousuario(id):
-    print(id)
-    tipousuario = TipoUsuario.query.get_or_404(id)
-    db.session.delete(tipousuario)
-    db.session.commit()
-    return "Removido com sucesso!"
+    try:
+        tipousuario = TipoUsuario.query.get_or_404(id)
+        db.session.delete(tipousuario)
+        db.session.commit()
+        return make_response("Removido com sucesso!", 200)
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 # Metodos do Rede Social
 
 
 @app.route('/redesocial/', methods=['GET'])
 def get_redesocial():
-    resultado = RedeSocial.query.all()
-    lista = []
-    for item in resultado:
-        lista.append(RedeSocial.to_json(item))
-    return jsonify(lista)
+    try:
+        resultado = RedeSocial.query.all()
+        lista = []
+        for item in resultado:
+            lista.append(RedeSocial.to_json(item))
+        return make_response(jsonify(lista), 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/redesocial/<int:id>', methods=['GET'])
 def get_redesocialbyid(id):
-    response = jsonify({})
     try:
         redesocial = RedeSocial.query.get_or_404(id)
-        response.status_code = 200
+        if (redesocial):
+            rs = jsonify(redesocial.to_json())
+        else:
+            rs = jsonify({})
+        return make_response(rs, 200)
     except exc.SQLAlchemyError as e:
-        response.status_code = 400
         print(e)
         db.session.remove()
         pass
-    return jsonify(redesocial.to_json())
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/redesocial/', methods=['POST'])
 def new_redesocial():
-    response = jsonify({})
     try:
-        print(request.json)
         resultado = RedeSocial().from_json(request.json)
-        print(resultado)
         db.session.add(resultado)
         db.session.commit()
-        response.status_code = 200
+        if (resultado):
+            rs = jsonify(resultado.to_json())
+        else:
+            rs = jsonify({})
+        return make_response(rs, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/redesocial/', methods=['PUT'])
 def update_redesocial():
-    print("chegou!")
-    redesocial_alterado = RedeSocial().from_json(request.json)
-    redesocial = RedeSocial.query.get(redesocial_alterado.id)
-    redesocial.from_json(request.json)
-    response = jsonify({})
     try:
+        redesocial_alterado = RedeSocial().from_json(request.json)
+        redesocial = RedeSocial.query.get(redesocial_alterado.id)
+        redesocial.from_json(request.json)
         db.session.commit()
-        response.status_code = 200
+        return make_response(redesocial, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/redesocial/<int:id>', methods=['DELETE'])
 def remove_redesocial(id):
-    resultado = RedeSocial.query.get_or_404(id)
-    db.session.delete(resultado)
-    db.session.commit()
-    return "Removido com sucesso!"
+    try:
+        resultado = RedeSocial.query.get_or_404(id)
+        db.session.delete(resultado)
+        db.session.commit()
+        return make_response("Removido com sucesso!", 200)
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 # Metodos do Grupo Usuario
 
 
 @app.route('/grupousuario/', methods=['GET'])
 def get_grupousuario():
-    resultado = GrupoUsuario.query.all()
-    lista = []
-    for item in resultado:
-        lista.append(GrupoUsuario.to_json(item))
-    return jsonify(lista)
+    try:
+        resultado = GrupoUsuario.query.all()
+        lista = []
+        for item in resultado:
+            lista.append(GrupoUsuario.to_json(item))
+            return make_response(jsonify(lista), 200)
+    except exc.SQLAlchemyError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/grupousuario/', methods=['POST'])
 def new_grupousuario():
-    response = jsonify({})
     try:
-        print(request.json)
         resultado = GrupoUsuario().from_json(request.json)
-        print(resultado)
         db.session.add(resultado)
         db.session.commit()
-        response.status_code = 200
+        if (resultado):
+            rs = jsonify(resultado.to_json())
+        else:
+            rs = jsonify({})
+        return make_response(rs, 200)
     except exc.IntegrityError as e:
         print(e)
         db.session.remove()
-        response.status_code = 400
         pass
-    return response
+        return make_response(jsonify({}), 400)
 
 
 @app.route('/grupousuario/<int:usuario_id>/<int:grupo_id>/<int:tipo_usuario_id>', methods=['DELETE'])
 def remove_grupousuario(usuario_id, grupo_id, tipo_usuario_id):
-    resultado = GrupoUsuario.query.filter_by(usuario_id=usuario_id, grupo_id=grupo_id, tipo_usuario_id=tipo_usuario_id).first()
-    db.session.delete(resultado)
-    db.session.commit()
-    return "Removido com sucesso!"
+    try:
+        resultado = GrupoUsuario.query.filter_by(usuario_id=usuario_id, grupo_id=grupo_id, tipo_usuario_id=tipo_usuario_id).first()
+        db.session.delete(resultado)
+        db.session.commit()
+        return make_response("Removido com sucesso!", 200)
+    except exc.IntegrityError as e:
+        print(e)
+        db.session.remove()
+        pass
+        return make_response(jsonify({}), 400)
 
 
 # Metodo de boas vindas
@@ -520,5 +599,5 @@ def dropdb():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
 

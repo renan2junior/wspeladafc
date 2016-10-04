@@ -22,7 +22,7 @@ class RedeSocial(db.Model):
 
     def from_json(self, json):
         try:
-            if json['id']:
+            if json.get('id'):
                 self.id = json['id']
             self.descricao = json['descricao']
         except KeyError as e:

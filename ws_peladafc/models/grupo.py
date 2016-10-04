@@ -1,4 +1,6 @@
 from util.dbutil import db, ValidationError
+from models.local import Local
+from models.usuario import Usuario
 
 
 class Grupo(db.Model):
@@ -38,13 +40,13 @@ class Grupo(db.Model):
             'horario': self.horario,
             'telefone_grupo': self.telefone_grupo,
             'conta_grupo': self.conta_grupo,
-            'usuario_id': self.usuario_id,
-            'local_id': self.local_id
+            'usuario': {'id': self.usuario.id},
+            'local': {'id': self.local.id }
         }
 
     def from_json(self, json):
         try:
-            if json['id']:
+            if json.get('id'):
                 self.id = json['id']
             self.nome_contato = json['nome_contato']
             self.email_contato = json['email_contato']
@@ -52,8 +54,10 @@ class Grupo(db.Model):
             self.horario = json['horario']
             self.telefone_grupo = json['telefone_grupo']
             self.conta_grupo = json['conta_grupo']
-            self.usuario_id = json['usuario_id']
-            self.local_id = json['local_id']
+            self.local = Local().from_json(json['local'])
+            self.usuario = Usuario().from_json(json['usuario'])
+            #self.usuario_id = self.usuario.id
+            #self.local_id = self.local.id
         except KeyError as e:
             raise ValidationError('Grupo invalida : missing ' + e.args[0])
         return self
